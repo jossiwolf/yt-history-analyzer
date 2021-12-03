@@ -1,6 +1,8 @@
 package de.jossiwolf.common.util.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -38,6 +40,10 @@ fun <S> rememberBackStack(vararg inputs: Any?, entries: List<S> = emptyList()) =
  * @param content Slot for the content, invoked with the topmost back stack entry
  */
 @Composable
-fun <S> BackStack(backStack: BackStack<S>, content: @Composable (screen: S) -> Unit) {
-    content(backStack.last())
+fun <S> BackStack(
+    backStack: BackStack<S>,
+    modifier: Modifier = Modifier,
+    content: @Composable (screen: S) -> Unit
+) {
+    Box(modifier) { content(backStack.last()) }
 }

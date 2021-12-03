@@ -1,4 +1,4 @@
-package de.jossiwolf.common.util
+package de.jossiwolf.common.util.fs
 
 /**
  * Simple helper for FS IO operations across multiple platforms

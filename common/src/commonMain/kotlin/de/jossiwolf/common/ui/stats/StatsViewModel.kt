@@ -23,7 +23,7 @@ class StatsViewModel(
 
     private val cachedVideoInformation = mutableMapOf<YouTubeResourceId, YouTubeVideoResource>()
 
-    val goodState = flow {
+    val state = flow {
         val activity = activityRepository.getActivity()
         val groups = activity
             .groupBy { it.header }

@@ -1,6 +1,8 @@
 package de.jossiwolf.common.util.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import kotlinx.serialization.json.JsonNull.content
 
 /**
  * Entry point to a composable navigation hierarchy.
@@ -16,20 +18,22 @@ import androidx.compose.runtime.Composable
 @Composable
 fun <S> NavHost(
     initial: S,
+    modifier: Modifier = Modifier,
     backStack: BackStack<S> = rememberBackStack(entries = listOf(initial)),
     navigator: Navigator<S> = rememberNavigator(backStack),
     backStackHost: BackStackHost<S> = DefaultBackStackHost(),
     content: @Composable (navigator: Navigator<S>, screen: S) -> Unit
 ) {
-    backStackHost(backStack) { screen -> content(navigator, screen) }
+    backStackHost(backStack, modifier) { screen -> content(navigator, screen) }
 }
 
 typealias BackStackHost<S> = @Composable (
     backStack: BackStack<S>,
+    modifier: Modifier,
     content: @Composable (screen: S) -> Unit
 ) -> Unit
 
 private fun <S> DefaultBackStackHost() =
-    @Composable { backStack: BackStack<S>, content: @Composable (screen: S) -> Unit ->
-        BackStack(backStack, content)
+    @Composable { backStack: BackStack<S>, modifier: Modifier, content: @Composable (screen: S) -> Unit ->
+        BackStack(backStack, modifier, content)
     }

@@ -20,7 +20,7 @@ class StatsViewModelTest {
     fun testSomething(): Unit = runBlocking {
         val given = Given(videoIds = listOf(YouTubeResourceId("F7wIRxQEetc"), YouTubeResourceId("F7wIRxQEetc")))
         val viewModel = StatsViewModel(from = given)
-        val states = viewModel.goodState
+        val states = viewModel.state
             .take(2)
             .toList()
 

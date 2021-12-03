@@ -7,5 +7,5 @@ import de.jossiwolf.common.ui.stats.StatsScreen
 @Preview
 @Composable
 fun AppPreview() {
-    StatsScreen()
+    StatsScreen("/Users/jossiwolf/Downloads/ytmusic_wrapped-python3/watch-history.json")
 }

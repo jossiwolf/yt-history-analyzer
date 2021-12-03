@@ -7,12 +7,12 @@ import de.jossiwolf.common.util.navigation.NavHost
 
 @Composable
 fun YouTubeStatsApp() {
-    NavHost<Screen> { navigator, screen ->
+    NavHost<Screen>(initial = Screen.Stats) { navigator, screen ->
         when (screen) {
             is Screen.Intro -> IntroScreen(
                 showStats = {
                     navigator.pop()
-                    navigator.push(Screen.Stats())
+                    navigator.push(Screen.Stats)
                 }
             )
             is Screen.Stats -> StatsScreen()

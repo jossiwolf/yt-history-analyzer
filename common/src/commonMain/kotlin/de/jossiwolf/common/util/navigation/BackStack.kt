@@ -1,10 +1,10 @@
 package de.jossiwolf.common.util.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 
 /**
  * A list-backed [BackStack] for a stack of type [S].
@@ -22,12 +22,13 @@ class BackStack<S>(val backStackList: SnapshotStateList<S>) : MutableList<S> by 
  * Create and remember a [BackStack] and save and restore it across process recreation.
  *
  * @param inputs Inputs on whose changes to recreate the [BackStack] (and thus reset it)
+ * @param entries Initial entries of the back stack, empty by default
  */
 @Composable
-fun <S> rememberBackStack(vararg inputs: Any?) = rememberSaveable(
+fun <S> rememberBackStack(vararg inputs: Any?, entries: List<S> = emptyList()) = rememberSaveable(
     inputs,
     saver = BackStack.Saver()
-) { BackStack<S>(backStackList = mutableStateListOf()) }
+) { BackStack(backStackList = entries.toMutableStateList()) }
 
 /**
  * Composable that hosts a [backStack] by invoking the [content] with the topmost item of the

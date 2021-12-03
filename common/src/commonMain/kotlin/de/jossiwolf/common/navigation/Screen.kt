@@ -6,5 +6,5 @@ package de.jossiwolf.common.navigation
 sealed interface Screen {
     sealed interface Intro : Screen
 
-    class Stats : Screen
+    object Stats : Screen
 }

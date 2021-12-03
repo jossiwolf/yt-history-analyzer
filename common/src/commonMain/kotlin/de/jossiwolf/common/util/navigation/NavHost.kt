@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
  * Entry point to a composable navigation hierarchy.
  *
  * @param S The type of screen
+ * @param initial The initial screen
  * @param backStack The [BackStack] maintained by the [navigator]
  * @param navigator The [Navigator] that maintains the [backStack]
  * @param backStackHost Slot for the [Composable] that will host the [content]. This can be used to
@@ -14,7 +15,8 @@ import androidx.compose.runtime.Composable
  */
 @Composable
 fun <S> NavHost(
-    backStack: BackStack<S> = rememberBackStack(),
+    initial: S,
+    backStack: BackStack<S> = rememberBackStack(entries = listOf(initial)),
     navigator: Navigator<S> = rememberNavigator(backStack),
     backStackHost: BackStackHost<S> = DefaultBackStackHost(),
     content: @Composable (navigator: Navigator<S>, screen: S) -> Unit

@@ -45,7 +45,7 @@ inline fun <reified VM : ViewModel> viewModel(
 inline fun <reified VM : ViewModel> viewModel(
     registry: ViewModelRegistry = DefaultViewModelRegistry,
     noinline factory: (vmClass: KClass<VM>) -> VM = DefaultConstructorBasedViewModelFactory::create
-): VM = viewModel(registry, ViewModelFactory(factory))
+): VM = viewModel(registry, remember(factory) { ViewModelFactory(factory) })
 
 fun <VM : ViewModel> ViewModelFactory(create: (vmClass: KClass<VM>) -> VM) = object : ViewModelFactory {
     @Suppress("UNCHECKED_CAST")

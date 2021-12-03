@@ -3,6 +3,7 @@
 package de.jossiwolf.common.ui.stats
 
 import de.jossiwolf.common.model.data.youtube.YouTubeResourceId
+import de.jossiwolf.common.model.data.youtube.activity.YouTubeActivity
 import de.jossiwolf.common.model.data.youtube.activity.id
 import de.jossiwolf.common.model.data.youtube.video.YouTubeVideoResource
 import de.jossiwolf.common.repository.YouTubeActivityRepository
@@ -10,6 +11,9 @@ import de.jossiwolf.common.repository.YouTubeVideoRepository
 import de.jossiwolf.common.util.batch
 import de.jossiwolf.common.util.lce.asLceState
 import de.jossiwolf.common.util.viewModel.ViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -23,12 +27,42 @@ class StatsViewModel(
 
     private val cachedVideoInformation = mutableMapOf<YouTubeResourceId, YouTubeVideoResource>()
 
+    private suspend fun FlowCollector<WatchStatisticsScreenState>.analyzeWatchStatistics(
+        watchActivities: List<YouTubeActivity>
+    ) {
+        val watchedVideoStatistics = watchActivities
+            .groupBy { activity -> activity.title }
+            .mapKeys { (videoTitle, _) -> videoTitle.removePrefix("Watched ") }
+            .mapValues { (_, videoActivities) -> videoActivities.size }
+            .map { (videoTitle, timesWatched) -> WatchActivity(videoTitle, timesWatched) }
+            .sortedByDescending { activity -> activity.timesWatched }
+        val mostWatchedVideo = watchedVideoStatistics.first()
+        val medianWatchCount = watchedVideoStatistics.size / mostWatchedVideo.timesWatched
+        val mostWatchedVideos = watchedVideoStatistics.takeWhile { activity ->
+            activity.timesWatched > medianWatchCount
+        }
+        val maxMessageDisplayTime = 1000
+        mostWatchedVideos
+            .shuffled()
+            .forEach { video ->
+                val messageDisplayTime =
+                    maxMessageDisplayTime * 1L - (video.timesWatched - mostWatchedVideo.timesWatched)
+                emit(
+                    WatchStatisticsScreenState(
+                        groups = emptyList(),
+                        loadingMessage = "Oh wow! You have been listening to ${video.title} a lot. Yikes. ${video.timesWatched} times??"
+                    )
+                )
+                delay(messageDisplayTime)
+            }
+    }
+
     val state = flow {
         val activity = activityRepository.getActivity()
         val groups = activity
             .groupBy { it.header }
-            .map { (name, entries) ->
-                val uniqueVideos = entries
+            .map { (name, watchActivities) ->
+                val uniqueVideos = watchActivities
                     .distinctBy { it.title }
                     .filter { it.titleUrl != null }
                 val uniqueVideoIds = uniqueVideos.associateBy { it.id }
@@ -40,6 +74,9 @@ class StatsViewModel(
                         loadingMessage = "Fetching video information for ${nonCachedVideoIds.size} videos :)"
                     )
                 )
+                analyzeWatchStatistics(watchActivities)
+
+
                 var fetchedVideos = 0
                 val freshVideoInformation = getFreshVideoInformation(
                     forVideoIds = nonCachedVideoIds,
@@ -48,7 +85,7 @@ class StatsViewModel(
                         val loadingMessage =
                             "Fetching video information for ${nonCachedVideoIds.size} videos. \n $fetchedVideos already done :)"
                         val progress = fetchedVideos / nonCachedVideoIds.size
-                        emit(WatchStatisticsScreenState(groups = emptyList(), loadingMessage = loadingMessage))
+                        //emit(WatchStatisticsScreenState(groups = emptyList(), loadingMessage = loadingMessage))
                         fetchedVideos++
                     }
                 )
@@ -59,7 +96,7 @@ class StatsViewModel(
                 val allVideoInformation = freshVideoInformation + requestedVideoInformationFromCache
                 val videoStatistics = allVideoInformation.map { video ->
                     val title = uniqueVideoIds[video.id]!!.title.removePrefix("Watched ")
-                    val timesWatched = entries
+                    val timesWatched = watchActivities
                         .filter { it.titleUrl != null }
                         .filter { watchedVideo -> watchedVideo.id == video.id }
                         .size
@@ -69,7 +106,7 @@ class StatsViewModel(
             }
         val state = WatchStatisticsScreenState(groups, loadingMessage = null)
         emit(state)
-    }.asLceState(viewModelScope)
+    }.asLceState(viewModelScope, SharingStarted.Lazily)
 
     private suspend fun getFreshVideoInformation(
         forVideoIds: Collection<YouTubeResourceId>,

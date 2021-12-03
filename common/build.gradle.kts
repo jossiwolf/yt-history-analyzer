@@ -4,6 +4,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose") version "1.0.0-alpha3"
     id("com.android.library")
+    id("com.squareup.sqldelight")
     kotlin("plugin.serialization") version "1.5.31"
 }
 
@@ -43,6 +44,7 @@ kotlin {
             dependencies {
                 api("androidx.appcompat:appcompat:1.2.0")
                 api("androidx.core:core-ktx:1.3.1")
+                api("com.squareup.sqldelight:android-driver:1.5.3")
             }
         }
         val androidTest by getting {
@@ -53,7 +55,8 @@ kotlin {
         val desktopMain by getting {
             dependencies {
                 api(compose.preview)
-                implementation("ch.qos.logback:logback-classic:1.2.6")
+                api("ch.qos.logback:logback-classic:1.2.6")
+                api("com.squareup.sqldelight:sqlite-driver:1.5.3")
             }
         }
         val desktopTest by getting

@@ -19,5 +19,5 @@ class YouTubeService(
         return response
     }
 
-    private val apiKey: String = TODO()
+    private val apiKey: String = ""
 }

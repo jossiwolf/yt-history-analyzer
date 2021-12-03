@@ -8,7 +8,9 @@ import de.jossiwolf.common.model.data.youtube.activity.id
 import de.jossiwolf.common.model.data.youtube.video.YouTubeVideoResource
 import de.jossiwolf.common.repository.YouTubeActivityRepository
 import de.jossiwolf.common.repository.YouTubeVideoRepository
+import de.jossiwolf.common.server.FAKE_SERVER_PORT
 import de.jossiwolf.common.util.batch
+import de.jossiwolf.common.data.DriverFactory
 import de.jossiwolf.common.util.lce.asLceState
 import de.jossiwolf.common.util.viewModel.ViewModel
 import kotlinx.coroutines.delay
@@ -18,10 +20,14 @@ import kotlinx.coroutines.flow.flow
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
+val FAKE_YOUTUBE_API = "http://localhost:$FAKE_SERVER_PORT"
+const val REAL_YOUTUBE_API = "https://www.googleapis.com/youtube/v3"
+
 class StatsViewModel(
     activityRepository: YouTubeActivityRepository,
-    youTubeApiEndpoint: String = "http://localhost:80",
-    private val videoRepository: YouTubeVideoRepository = YouTubeVideoRepository(youTubeApiEndpoint),
+    driverFactory: DriverFactory,
+    youTubeApiEndpoint: String = REAL_YOUTUBE_API,
+    private val videoRepository: YouTubeVideoRepository = YouTubeVideoRepository(driverFactory, youTubeApiEndpoint),
     private val rateLimitConfiguration: RateLimitConfiguration = RateLimitConfiguration.NoLimit()
 ) : ViewModel() {
 
@@ -121,6 +127,7 @@ class StatsViewModel(
         val video = videoRepository.getVideoInformation(videoId)
         if (video != null) {
             cachedVideoInformation[video.id] = video
+            videoRepository.saveVideoInformation(video)
         }
         return@batch video
     }.filterNotNull()

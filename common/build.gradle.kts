@@ -2,7 +2,7 @@ import org.jetbrains.compose.compose
 
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.0.0-alpha3"
+    id("org.jetbrains.compose") version "1.0.0"
     id("com.android.library")
     id("com.squareup.sqldelight")
     kotlin("plugin.serialization") version "1.5.31"
@@ -10,6 +10,12 @@ plugins {
 
 group = "de.jossiwolf"
 version = "1.0"
+
+sqldelight {
+    database("VideoDatabase") {
+        packageName = "de.jossiwolf.ytanalyzer"
+    }
+}
 
 kotlin {
     android()

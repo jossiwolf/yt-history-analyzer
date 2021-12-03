@@ -14,7 +14,7 @@ class YouTubeService(
         val response = get<YouTubeApiResponse<YouTubeVideoResource>>("videos") {
             parameter("part", YouTubeVideoInformationRequestType.contentDetails)
             parameter("id", id.rawId)
-            //parameter("key", apiKey)
+            parameter("key", apiKey)
         }
         return response
     }

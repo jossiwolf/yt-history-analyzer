@@ -1,0 +1,35 @@
+import de.jossiwolf.common.model.data.youtube.video.YouTubeVideoDefinition;
+import de.jossiwolf.common.model.data.youtube.video.YouTubeVideoDimension;
+import de.jossiwolf.common.model.data.youtube.video.YouTubeVideoProjection;
+import kotlin.collections.List;
+
+CREATE TABLE youtubeVideo (
+    id TEXT NOT NULL,
+    duration TEXT NOT NULL,
+    dimension TEXT AS YouTubeVideoDimension NOT NULL,
+    definition TEXT AS YouTubeVideoDefinition NOT NULL,
+    licensedContent INTEGER AS Boolean NOT NULL,
+    regionRestriction TEXT AS List<String> NOT NULL,
+    projection TEXT AS YouTubeVideoProjection NOT NULL
+);
+
+CREATE INDEX youtubeVideo_id ON youtubeVideo(id);
+
+insert:
+INSERT INTO youtubeVideo(id, duration, dimension, definition, licensedContent, regionRestriction, projection)
+VALUES ?;
+
+selectWithId:
+SELECT *
+FROM youtubeVideo
+WHERE youtubeVideo.id = :id
+LIMIT 1;
+
+selectAll:
+SELECT *
+FROM youtubeVideo;
+
+selectAvailableInRegion:
+SELECT *
+FROM youtubeVideo
+WHERE youtubeVideo.regionRestriction LIKE ('% ' || :name);

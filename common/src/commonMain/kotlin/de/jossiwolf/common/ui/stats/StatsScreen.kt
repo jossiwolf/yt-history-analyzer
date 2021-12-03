@@ -9,12 +9,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import de.jossiwolf.common.data.rememberDriverFactory
 import de.jossiwolf.common.repository.FileBasedYouTubeActivityRepository
 import de.jossiwolf.common.server.fakeYouTubeServer
 import de.jossiwolf.common.util.lce.Lce
 import de.jossiwolf.common.util.lce.LceDataView
 import de.jossiwolf.common.util.lce.getOrDefault
 import de.jossiwolf.common.util.viewModel.viewModel
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -23,8 +26,12 @@ fun StatsScreen(historyFilePath: String) {
         fakeYouTubeServer.start()
         onDispose { fakeYouTubeServer.stop(0, 1000) }
     }
+    val driverFactory = rememberDriverFactory()
     val viewModel = viewModel<StatsViewModel> {
-        StatsViewModel(FileBasedYouTubeActivityRepository(watchHistoryFilePath = historyFilePath))
+        StatsViewModel(
+            driverFactory = driverFactory,
+            activityRepository =  FileBasedYouTubeActivityRepository(watchHistoryFilePath = historyFilePath)
+        )
     }
     val statsState by viewModel.state.collectAsState()
 

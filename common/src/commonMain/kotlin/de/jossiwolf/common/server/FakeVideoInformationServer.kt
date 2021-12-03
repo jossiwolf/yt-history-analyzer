@@ -10,8 +10,11 @@ import io.ktor.routing.*
 import io.ktor.serialization.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import kotlin.random.Random
 
-val fakeYouTubeServer = embeddedServer(Netty) {
+val FAKE_SERVER_PORT = Random.nextInt(until = 9999)
+
+val fakeYouTubeServer = embeddedServer(Netty, port = FAKE_SERVER_PORT) {
     install(ContentNegotiation) {
         json()
     }

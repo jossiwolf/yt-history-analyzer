@@ -30,6 +30,7 @@ interface ViewModelRegistry {
     /**
      * Schedule the removal of the [viewModel] and destroy and remove it after the [gracePeriod]
      */
+    @OptIn(ExperimentalTime::class)
     fun remove(viewModel: ViewModel, key: Any = viewModel.hashCode(), gracePeriod: Duration = Duration.seconds(5))
 }
 

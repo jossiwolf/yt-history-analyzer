@@ -17,6 +17,7 @@ import kotlin.reflect.KClass
  * @param registry The [ViewModelRegistry] this VM will be registered with
  * @param factory The factory producing the instance
  */
+@OptIn(kotlin.time.ExperimentalTime::class)
 @Composable
 inline fun <reified VM : ViewModel> viewModel(
     registry: ViewModelRegistry = DefaultViewModelRegistry,
